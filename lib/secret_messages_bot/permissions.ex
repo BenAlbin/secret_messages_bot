@@ -1,0 +1,52 @@
+defmodule SecretMessagesBot.Permissions do
+  use Bitwise
+
+  @perms [
+    :create_instant_invite,
+    :kick_members,
+    :ban_members,
+    :administrator,
+    :manage_channels,
+    :manage_guild,
+    :add_reactions,
+    :view_audit_log,
+    :read_messages,
+    :send_messages,
+    :send_tts_messages,
+    :manage_messages,
+    :embed_links,
+    :attach_files,
+    :read_message_history,
+    :mention_everyone,
+    :use_external_emojis,
+    :connect,
+    :speak,
+    :mute_members,
+    :deafen_members,
+    :move_members,
+    :use_vad,
+    :change_nickname,
+    :manage_nicknames,
+    :manage_roles,
+    :manage_webhooks,
+    :manage_emojis
+  ]
+
+  @perm_map Stream.zip(@perms, Enum.map(0..28, &(1 <<< &1)))
+  |> Enum.into(%{})
+
+  def add_permission(bitset, permission) do
+    bitset ||| @perm_map[permission]
+  end
+
+  def no_permissions() do
+    Enum.reduce(@perms, 0, fn perm, acc -> add_permission(acc, perm) end)
+  end
+
+  def channel_owner_perms() do
+    allow = 0
+    |> add_permission(:read_messages)
+    |> add_permission(:send_messages)
+    |> add_permission(:read_message_history)
+  end
+end
