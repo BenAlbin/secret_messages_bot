@@ -13,7 +13,7 @@ defmodule SecretMessagesBot.Game do
     {:via, Registry, {Registry.Game, name}}
   end
 
-  def add_player(game, player_id) do
+  def add_player(game, player_id, channel_id) do
     GenServer.call(game, {:add_player, player_id})
   end
 
@@ -54,54 +54,57 @@ defmodule SecretMessagesBot.Game do
     {:noreply, state_data, @timeout}
   end
 
-  def handle_call({:add_player, player_id}, _from, state_data) do
-    case player_id not in state_data.not_ready_players do
-      true -> state_data
-              |> add_player_to_state(player_id)
-              |> reply_success(:ok)
+  def handle_call({:add_player, player_id, channel_id}, _from, state_data) do
+    case Enum.any?(state_data.players, fn {id, _struct} -> id == player_id  end) do
+      false -> state_data
+               |> add_player_to_list(player_id, channel_id)
+               |> reply_success(:ok)
       _ -> {:reply, {:error, :player_in_game}, state_data}
     end
   end
 
   def handle_call({:ready_up, player_id}, _from, state_data) do
-    case player_id in state_data.not_ready_players do
+    case Enum.any?(state_data.players, fn x -> x.id == player_id end) do
       true -> state_data
               |> ready_player_up(player_id)
               |> reply_success(:ok)
-      _ -> {:reply, :error, state_data}
+      _    -> {:reply, :error, state_data}
     end
   end
 
   def handle_call({:round_end}, _from, state_data) do
-    case length(state_data.not_ready_players) do
-      0 -> state_data
-           |> unready_players()
-           |> reply_success(:ok)
-      _ -> {:reply, {:error, :not_all_ready}, state_data}
+    case Enum.any?(state_data.players, fn x -> x.status == :not_ready end) do
+      false -> state_data
+               |> unready_players()
+               |> reply_success(:ok)
+      _     -> {:reply, {:error, :not_all_ready}, state_data}
     end
   end
 
-  defp add_player_to_state(%{not_ready_players: not_ready_players} = state_data,
-                           player_id) do
-    %{state_data | not_ready_players: [player_id | not_ready_players]}
+  ##
+
+  defp add_player_to_list(%{players: players} = state_data,
+                           player_id, channel_id) do
+    %{state_data | players: Map.put(players, player_id, Player.new(channel_id))}
   end
 
-  defp ready_player_up(%{not_ready_players: not_ready_players,
-                         ready_players: ready_players} = state_data,
-                       player_id) do
-    %{state_data | not_ready_players: List.delete(not_ready_players, player_id),
-                  ready_players: [player_id | ready_players]}
+  defp ready_player_up(%{players: players} = state_data, player_id) do
+    players[player_id]
   end
 
-  defp unready_players(%{ready_players: ready_players} = state_data) do
-    %{state_data | not_ready_players: ready_players, ready_players: []}
+  defp unready_players(%{players: players} = state_data) do
+    players = Enum.map(players, fn x -> %{x | status: :not_ready} end)
+    %{state_data | players: players}
+  end
+
+  defp ready_one(players, player_id) do
+    players = %{players | player_id => %{players[player_id] | status: :ready}}
   end
 
   defp fresh_state(name) do
     guild = name
-    not_ready_players = []
-    ready_players = []
-    %{guild: guild, not_ready_players: not_ready_players, ready_players: ready_players}
+    players = %{}
+    %{guild: guild, players: players}
   end
 
   defp reply_success(state_data, reply) do

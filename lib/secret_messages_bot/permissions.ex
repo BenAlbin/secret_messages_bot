@@ -39,8 +39,16 @@ defmodule SecretMessagesBot.Permissions do
     bitset ||| @perm_map[permission]
   end
 
-  def no_permissions() do
+  def remove_permission(bitset, permission) do
+    bitset &&& bnot(@perm_map[permission])
+  end
+
+  def all_permissions() do
     Enum.reduce(@perms, 0, fn perm, acc -> add_permission(acc, perm) end)
+  end
+
+  def no_permissions() do
+    0
   end
 
   def channel_owner_perms() do

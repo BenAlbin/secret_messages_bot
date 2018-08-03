@@ -43,7 +43,7 @@ defmodule SecretMessagesBot.Commands do
     permissions_all = %OverWrite{id: everyone_role_id,
                                  type: "role",
                                  allow: 0,
-                                 deny: Permissions.no_permissions()}
+                                 deny: Permissions.all_permissions()}
     {:ok, role} = Client.create_role(guild_id,
                                      member_string,
                                      hoist: true,
