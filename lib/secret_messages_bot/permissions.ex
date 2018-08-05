@@ -52,7 +52,7 @@ defmodule SecretMessagesBot.Permissions do
   end
 
   def channel_owner_perms() do
-    allow = 0
+    0
     |> add_permission(:read_messages)
     |> add_permission(:send_messages)
     |> add_permission(:read_message_history)

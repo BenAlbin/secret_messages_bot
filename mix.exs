@@ -23,7 +23,8 @@ defmodule SecretMessagesBot.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:alchemy, "~> 0.6.0", hex: :discord_alchemy}
+      {:alchemy, git: "https://github.com/cronokirby/alchemy.git"},
+      {:distillery, "~> 1.5", runtime: false}
     ]
   end
 end

@@ -17,7 +17,7 @@ defmodule SecretMessagesBot.GameSupervisor do
   end
 
   def init(:ok) do
-    Supervisor.init([Game], strategy: :simple_one_for_one)
+    Supervisor.init([Game.Server], strategy: :simple_one_for_one)
   end
 
   defp pid_from_name(name) do

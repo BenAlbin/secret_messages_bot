@@ -8,7 +8,7 @@ defmodule SecretMessagesBot.Player do
     %Player{}
   end
 
-  def new(channel) do
-    %Player{channel: channel}
+  def new(params) do
+    struct(Player, params)
   end
 end
