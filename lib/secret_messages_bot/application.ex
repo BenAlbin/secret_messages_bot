@@ -9,6 +9,7 @@ defmodule SecretMessagesBot.Application do
       SecretMessagesBot.GameSupervisor
     ]
 
+    SecretMessagesBot.start([], [])
     :ets.new(:game_state, [:public, :named_table])
     opts = [strategy: :one_for_one, name: SecretMessagesBot.Supervisor]
     Supervisor.start_link(children, opts)

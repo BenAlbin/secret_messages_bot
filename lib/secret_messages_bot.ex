@@ -5,7 +5,7 @@ defmodule SecretMessagesBot do
   use Alchemy.Cogs
 
   def start(_type, _args) do
-    run = Client.start(System.get_env("DISCORD_KEY"))
+    run = Client.start(Application.fetch_env!(:secret_messages_bot, :token))
     use Commands
     Cogs.set_prefix("!!")
     run

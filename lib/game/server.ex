@@ -35,10 +35,28 @@ defmodule SecretMessagesBot.Game.Server do
     {:noreply, state_data, @timeout}
   end
 
+  def handle_call({:set_main_channel, channel_id}, _from, state_data) do
+    state_data
+    |> Impl.put_main_channel(channel_id)
+    |> handle_result(state_data)
+  end
+
+  def handle_call({:get_main_channel}, _from, state_data) do
+    {:reply, {:ok, state_data.main_channel}, state_data}
+  end
+
   def handle_call({:add_player, player_id}, _from, state_data) do
     state_data
     |> Impl.put_player(player_id)
     |> handle_result(state_data)
+  end
+
+  def handle_call({:get_player, player_id}, _from,
+    %{players: players} = state_data) do
+    case players[player_id] do
+      nil -> {:reply, {:error, :player_not_exist}, state_data}
+      player -> {:reply, {:ok, player}, state_data}
+    end
   end
 
   def handle_call({:ready_up, player_id}, _from, state_data) do

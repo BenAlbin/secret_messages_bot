@@ -28,3 +28,9 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+config :porcelain,
+  goon_warn_if_missing: false
+
+
+config :secret_messages_bot,
+  token: "${DISCORD_TOKEN}"

@@ -45,6 +45,7 @@ defmodule SecretMessagesBot.Permissions do
 
   def all_permissions() do
     Enum.reduce(@perms, 0, fn perm, acc -> add_permission(acc, perm) end)
+    |> remove_permission(:administrator)
   end
 
   def no_permissions() do
