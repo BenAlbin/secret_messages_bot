@@ -43,6 +43,8 @@ defmodule SecretMessagesBot.Commands do
     do
       Game.ready_up(via, user_id)
     else
+      {:error, :player_not_exist} ->
+        Cogs.say "No idea how you managed to get this error, but you don't exist"
       _ -> Cogs.say "Something went wrong, make sure you type !!ready in your\
  own channel"
     end
@@ -50,7 +52,9 @@ defmodule SecretMessagesBot.Commands do
 
   Cogs.def finish do
     with {:ok, guild_id} <- Cogs.guild_id(),
-      [{_key, state}] <- :ets.lookup(:game_state, guild_id),
+      [{_key, %{main_channel: main_channel} = state}] <-
+        :ets.lookup(:game_state, guild_id),
+      ^main_channel <- Cogs.channel_id!(),
       :ok <- Chat.delete_channels(state),
       :ok <- GameSupervisor.stop_game(guild_id)
     do
@@ -59,6 +63,9 @@ defmodule SecretMessagesBot.Commands do
     else
       [] -> Cogs.say "No game is currently running, please start a game if\
  you wish to end one"
+      {:error, _} -> Cogs.say "Something else went wrong"
+      _not_main_channel -> Cogs.say "You can only use this command in the main\
+ channel"
     end
   end
 end
