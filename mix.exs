@@ -25,7 +25,7 @@ defmodule SecretMessagesBot.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:alchemy, path: "../Alchemy/alchemy"},
+      {:alchemy, git: "https://github.com/BenAlbin/alchemy.git"},
       {:distillery, "~> 1.5", runtime: false}
     ]
   end
