@@ -24,5 +24,6 @@ defmodule SecretMessagesBot.Embed do
     |> Enum.filter(fn x -> x != "!!ready" end)
     |> Enum.reverse()
     |> Enum.join(" | ")
+    |> String.slice(0..255)
   end
 end
