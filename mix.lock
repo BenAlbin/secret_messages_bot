@@ -1,5 +1,5 @@
 %{
-  "alchemy": {:git, "https://github.com/cronokirby/alchemy.git", "7441634bbc3145bbe98f0e04475ec9393d37c258", []},
+  "alchemy": {:git, "https://github.com/BenAlbin/alchemy.git", "9b4fa6319645e06fca6ccd4f0f2b850d6fd4a861", []},
   "certifi": {:hex, :certifi, "2.3.1", "d0f424232390bf47d82da8478022301c561cf6445b5b5fb6a84d49a9e76d2639", [:rebar3], [{:parse_trans, "3.2.0", [hex: :parse_trans, repo: "hexpm", optional: false]}], "hexpm"},
   "chacha20": {:hex, :chacha20, "1.0.1", "4f5eb7ec715b63f90b5f152b91cc490382753ad08827960017c0660c8e30f613", [:mix], [], "hexpm"},
   "curve25519": {:hex, :curve25519, "1.0.2", "1dd89550518937ed1c8196389a3974b3b2fb5f016fa0bd0601e8cdcb44336bf2", [:mix], [], "hexpm"},

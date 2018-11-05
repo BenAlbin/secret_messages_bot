@@ -83,9 +83,9 @@ defmodule SecretMessagesBot.Game.Impl do
 
   defp do_end_round(%{players: players} = state_data) do
     with {:ok, _} <- Chat.round_end_message(state_data),
-         players <-
-           Enum.into(players, %{}, fn {id, player} ->
-             {id, Chat.new_marker(player)} end)
+      players <-
+        Enum.into(players, %{}, fn {id, player} ->
+          {id, Chat.new_marker(player)} end)
     do
       update_status_all(%{state_data | players: players}, :not_ready)
     end

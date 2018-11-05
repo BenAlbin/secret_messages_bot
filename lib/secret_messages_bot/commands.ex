@@ -1,27 +1,42 @@
 defmodule SecretMessagesBot.Commands do
-  alias SecretMessagesBot.{Game, GameSupervisor, Chat}
-  alias Alchemy.Client
+  defmacro __using__(_opts) do
+    quote do
+      alias SecretMessagesBot.Game
+      alias SecretMessagesBot.GameSup
+      alias SecretMessagesBot.Chat
+      alias Alchemy.Client
+      alias Alchemy.Cache
+
+      def check_channel(channel_one, channel_two) do
+        if channel_one == channel_two do
+          :ok
+        else
+          {:error, :not_correct_channel}
+        end
+      end
+    end
+  end
+
+  alias __MODULE__
 
   use Alchemy.Cogs
 
+
   Cogs.def setup do
-    with {:ok, guild_id} <- Cogs.guild_id(),
-      [] <- :ets.lookup(:game_state, guild_id),
-      {:ok, _pid} <- GameSupervisor.start_game(guild_id),
-      via <- Game.via_tuple(guild_id),
-      :ok <- Game.set_main_channel(via, Cogs.channel_id!())
+    # Cogs.def injects message, so I just parse it manually to avoid macro bloat
+    with {:ok, :game_started} <- Commands.Setup.do_setup(message)
     do
-      Cogs.say "Game incoming, type !!join to join"
+      Cogs.say "Game started, type !!join to join"
     else
-      [{_key, _state}] -> Cogs.say "Game already in progress"
+      {:error, :game_already_exists} ->
+        Cogs.say "Game already exists"
+      _ ->
+        Cogs.say "Something else went wrong"
     end
   end
 
   Cogs.def join do
-    with user <- Cogs.user!(),
-      {:ok, guild_id} <- Cogs.guild_id(),
-      via <- Game.via_tuple(guild_id),
-      :ok <- Game.add_player(via, user.id)
+    with {:ok, _} <- Commands.Join.do_join(message)
     do
       Cogs.say "Player #{user.username} added to the game"
     else
@@ -35,36 +50,28 @@ defmodule SecretMessagesBot.Commands do
   end
 
   Cogs.def ready do
-    with user_id <- Cogs.user_id!(),
-      {:ok, guild_id} <- Cogs.guild_id(),
-      via <- Game.via_tuple(guild_id),
-      {:ok, %{channel: channel}} <- Game.get_player(via, user_id),
-      ^channel <- Cogs.channel_id!()
+    with {:ok, _} <- Commands.Ready.do_ready(message)
     do
-      Game.ready_up(via, user_id)
     else
       {:error, :player_not_exist} ->
         Cogs.say "No idea how you managed to get this error, but you don't exist"
-      _ -> Cogs.say "Something went wrong, make sure you type !!ready in your\
- own channel"
+      {:error, :wrong_channel_ready} ->
+        Cogs.say "Please ready up in your own channel"
     end
   end
 
+  ## TODO: Restrict this command to people with appropriate permissions.
   Cogs.def finish do
-    with {:ok, guild_id} <- Cogs.guild_id(),
-      [{_key, %{main_channel: main_channel} = state}] <-
-        :ets.lookup(:game_state, guild_id),
-      ^main_channel <- Cogs.channel_id!(),
-      :ok <- Chat.delete_channels(state),
-      :ok <- GameSupervisor.stop_game(guild_id)
+    with :ok <- Commands.Finish.do_finish(message)
     do
-      Cogs.say "Game finished. Don't blame me if you did this accidentally\
-, please send me a message if this is an issue or something and I'll fix it"
+      Cogs.say "Game ended"
     else
-      [] -> Cogs.say "No game is currently running, please start a game if\
- you wish to end one"
+      {:error, :no_game_running} ->
+        Cogs.say "No game is currently running, please start a game if you wish \
+to end one"
       {:error, _} -> Cogs.say "Something else went wrong"
-      _not_main_channel -> Cogs.say "You can only use this command in the main\
+      _not_main_channel ->
+        Cogs.say "You can only use this command in the main\
  channel"
     end
   end

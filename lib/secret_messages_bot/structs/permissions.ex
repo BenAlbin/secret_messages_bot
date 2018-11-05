@@ -35,10 +35,12 @@ defmodule SecretMessagesBot.Permissions do
   @perm_map Stream.zip(@perms, Enum.map(0..28, &(1 <<< &1)))
   |> Enum.into(%{})
 
+  @spec add_permission(integer(), atom()) :: integer()
   def add_permission(bitset, permission) do
     bitset ||| @perm_map[permission]
   end
 
+  @spec remove_permission(integer(), atom()) :: integer()
   def remove_permission(bitset, permission) do
     bitset &&& bnot(@perm_map[permission])
   end
