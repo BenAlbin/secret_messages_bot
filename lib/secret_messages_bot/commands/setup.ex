@@ -1,7 +1,7 @@
 defmodule SecretMessagesBot.Commands.Setup do
-  use SecretMessagesBot.Commands
+  use SecretMessagesBot.Commands.Imports
 
-  def do_setup(%{channel_id: channel_id} = message) do
+  def do_setup(%{channel_id: channel_id} = _message) do
     with {:ok, guild_id} <- Cache.guild_id(channel_id),
       [] <- :ets.lookup(:game_state, guild_id)
     do

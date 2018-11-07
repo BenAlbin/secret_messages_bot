@@ -4,7 +4,6 @@ defmodule SecretMessagesBot.Player do
             status: :not_ready,
             last_marker: nil
 
-  @spec new() :: SecretMessagesBot.Player.t()
   def new() do
     %Player{}
   end

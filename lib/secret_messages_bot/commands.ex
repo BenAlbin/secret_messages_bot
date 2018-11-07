@@ -1,22 +1,4 @@
 defmodule SecretMessagesBot.Commands do
-  defmacro __using__(_opts) do
-    quote do
-      alias SecretMessagesBot.Game
-      alias SecretMessagesBot.GameSup
-      alias SecretMessagesBot.Chat
-      alias Alchemy.Client
-      alias Alchemy.Cache
-
-      def check_channel(channel_one, channel_two) do
-        if channel_one == channel_two do
-          :ok
-        else
-          {:error, :not_correct_channel}
-        end
-      end
-    end
-  end
-
   alias __MODULE__
 
   use Alchemy.Cogs
@@ -38,7 +20,7 @@ defmodule SecretMessagesBot.Commands do
   Cogs.def join do
     with {:ok, _} <- Commands.Join.do_join(message)
     do
-      Cogs.say "Player #{user.username} added to the game"
+      Cogs.say "Player blank added to the game"
     else
       {:error, :already_exists} ->
         Cogs.say "Player already in the game"

@@ -1,7 +1,7 @@
 defmodule SecretMessagesBot.Commands.Finish do
-  use SecretMessagesBot.Commands
+  use SecretMessagesBot.Commands.Imports
 
-  def do_finish(%{channel_id: channel_id} = message) do
+  def do_finish(%{channel_id: channel_id} = _message) do
     with {:ok, guild_id} <- Cache.guild_id(channel_id),
       # Check if game actually running, and extract main channel
       [{_key, %{main_channel: main_channel} = state}] <-
@@ -17,7 +17,7 @@ defmodule SecretMessagesBot.Commands.Finish do
     end
   end
 
-  def clean_up(guild_id, state) do
+  def clean_up(_guild_id, state) do
     Chat.delete_channels(state)
   end
 end
