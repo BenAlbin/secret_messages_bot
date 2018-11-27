@@ -4,6 +4,8 @@ Discord bot that allows you to play certain 'pen and paper' games within a disco
 
 Note: I have deliberately not allowed this bot to be installed on your own server, while I iron out the bugs and write tests.
 
+27/11/18 - Currently migrating the discord stuff over to nostrum instead of alchemy. Ideally want to make the code clearer and implement a message cache, but need a less opinionated framework for certain things (like for example, when the marker message is sent by the bot, I want to keep the most recent x messages in a cache until the ready command, then we stop caching messages and wait for everyone else to be ready.) 
+
 ### Commands
 
 Command | Usage
